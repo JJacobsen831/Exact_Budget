@@ -7,10 +7,12 @@ Created on Tue Sep 29 11:14:53 2020
 import os
 os.chdir('/Users/Jasen/Documents/GitHub/Exact_Budget/')
 
+import obs_depth_JJ as dep
+import numpy.ma as ma
 from netCDF4 import Dataset as nc4
 
 #files
-FilePath = '/home/cae/runs/jasen/wc15.a01.b03.hourlywindWT.windmcurrent.diags/out/'
+FilePath = '/home/cae/runs/jasen/wc15.a01.b03.hourlywindWT.windcurrent.diags/out/'
 HistFile = FilePath + 'ocean_hist_2014_0006.nc'
 AvgFile = FilePath + 'ocean_avg_2014_0006.nc'
 DiagFile = FilePath + 'ocean_dia_2014_0006.nc'
@@ -30,7 +32,9 @@ salt_rate = Diag.variables['salt_rate'][:]
 Avg = nc4(AvgFile, 'r')
 salt = Avg.variables['salt'][:]
 
-#vertical thickness from depth of w points
-##need to edit set_depth to include Vstretching = 4 (sperical)
-##then compute diff depth at w points
+#Compute vertical thickness at w points
+depth_domain = dep._set_depth_T(AvgFile, None, 'w', Avg.variables['h'][:],\
+                                Avg.variables['zeta'][:])
+
+delta = ma.diff(depth_domain, n = 1, axis = 1)
 
