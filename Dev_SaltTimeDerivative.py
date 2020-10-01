@@ -38,3 +38,19 @@ depth_domain = dep._set_depth_T(AvgFile, None, 'w', Avg.variables['h'][:],\
 
 delta = ma.diff(depth_domain, n = 1, axis = 1)
 
+#from history files compute time derivative of thickness of cell 
+Hist = nc4(HistFile, 'r')
+depth_hist = dep._set_depth_T(HistFile, None, 'w', Hist.variables['h'][:], \
+                              Hist.variables['zeta'][:])
+
+delta_hist = ma.diff(depth_hist, n = 1, axis = 1)
+
+ddelta_dt = ma.diff(delta_hist, \
+                     n = 1, axis = 0)/ma.diff(Hist.variables['ocean_time'][:],\
+                                    n = 1, axis = 0)
+
+#time deriv of salt, less change in cell volume
+ds_dt = salt_rate - salt/delta*ddelta_dt
+
+#multiply by s-prime, dv, and 2
+
